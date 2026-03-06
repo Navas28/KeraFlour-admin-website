@@ -5,17 +5,19 @@ import {
   ShieldUser,
   Menu,
   X,
-  User,
   LayoutDashboard,
   UtensilsCrossed,
+  ShoppingBag,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import ConfirmModal from "./UI/ConfirmModal";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -28,8 +30,12 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // If not logged in or not admin, we might want to hide most things,
-  // but for now let's just show a simplified version.
+  const handleLogout = () => {
+    logout();
+    setShowLogoutModal(false);
+    setMenuOpen(false);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -60,6 +66,13 @@ export default function Navbar() {
             >
               <UtensilsCrossed size={20} />
               <span>Products</span>
+            </Link>
+            <Link
+              href="/orders"
+              className="flex items-center space-x-2 px-5 py-3 text-lg font-semibold text-dark1 hover:text-green-700 transition"
+            >
+              <ShoppingBag size={20} />
+              <span>Orders</span>
             </Link>
           </nav>
 
@@ -98,8 +111,7 @@ export default function Navbar() {
                     <div className="border-t border-gray-50 mt-1 pt-1">
                       <button
                         onClick={() => {
-                          logout();
-                          setMenuOpen(false);
+                          setShowLogoutModal(true);
                         }}
                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
                       >
@@ -149,6 +161,13 @@ export default function Navbar() {
                 Products
               </Link>
               <Link
+                href="/orders"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
+              >
+                Orders
+              </Link>
+              <Link
                 href="/settings"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
@@ -170,8 +189,7 @@ export default function Navbar() {
                 <>
                   <button
                     onClick={() => {
-                      logout();
-                      setMobileMenuOpen(false);
+                      setShowLogoutModal(true);
                     }}
                     className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-100 rounded-lg"
                   >
@@ -183,6 +201,16 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        show={showLogoutModal}
+        title="Sign Out?"
+        message="Are you sure you want to log out of your admin account?"
+        confirmText="Sign Out"
+        type="logout"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutModal(false)}
+      />
     </>
   );
 }

@@ -1,12 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import {
-  Clock,
-  Users,
-  TrendingUp,
-  Package,
-} from "lucide-react";
+import { Clock, Users, TrendingUp, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import Loading from "./components/UI/Loading";
 import api from "@/lib/api";
@@ -15,23 +10,40 @@ export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState({
     totalProducts: 0,
-    todaySlots: 0,
-    activeUsers: 0,
+    pendingOrders: 0,
+    totalRevenue: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get("/api/products");
-        setStats((prev) => ({ ...prev, totalProducts: data.length }));
+        const [productsRes, ordersRes] = await Promise.all([
+          api.get("/api/products"),
+          api.get("/api/orders"),
+        ]);
+
+        const products = productsRes.data;
+        const orders = ordersRes.data;
+
+        const revenue = orders
+          .filter((o) => o.status === "completed")
+          .reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+        const pending = orders.filter((o) => o.status === "pending").length;
+
+        setStats({
+          totalProducts: products.length,
+          pendingOrders: pending,
+          totalRevenue: revenue,
+        });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchData();
   }, []);
 
   if (authLoading || loading) return <Loading />;
@@ -53,25 +65,25 @@ export default function Home() {
             title="Total Grains"
             value={stats.totalProducts}
             icon={<Package className="text-emerald-600" />}
-            trend="+2 this week"
+            trend="Active products"
           />
           <StatCard
-            title="Today's Slots"
-            value="12"
+            title="Pending Orders"
+            value={stats.pendingOrders}
             icon={<Clock className="text-amber-600" />}
-            trend="4 pending"
+            trend={`${stats.pendingOrders} to mill`}
           />
           <StatCard
             title="Active Customers"
-            value="48"
+            value="--"
             icon={<Users className="text-blue-600" />}
-            trend="+12% from last month"
+            trend="Coming soon"
           />
           <StatCard
-            title="Revenue"
-            value="₹4,250"
+            title="Total Revenue"
+            value={`₹${stats.totalRevenue}`}
             icon={<TrendingUp className="text-purple-600" />}
-            trend="On track"
+            trend="Completed orders"
           />
         </div>
       </div>
