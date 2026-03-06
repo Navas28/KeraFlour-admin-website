@@ -2,14 +2,11 @@
 
 import { useAuth } from "@/context/AuthContext";
 import {
-  LayoutDashboard,
-  UtensilsCrossed,
   Clock,
   Users,
   TrendingUp,
   Package,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import Loading from "./components/UI/Loading";
 import api from "@/lib/api";
@@ -51,7 +48,6 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
             title="Total Grains"

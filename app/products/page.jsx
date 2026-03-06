@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import ProductCard from "../components/ProductCard";
 import Loading from "../components/UI/Loading";
+import DeleteModal from "../components/UI/DeleteModal";
 import {
   Plus,
   X,
@@ -21,8 +22,11 @@ export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -69,6 +73,14 @@ export default function ProductsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.name) return toast.error("Grain Name is required");
+    if (!formData.pricePerKg) return toast.error("Price is required");
+    if (!formData.grindingTimePerKg)
+      return toast.error("Grinding time is required");
+    if (!editingProduct && !formData.image)
+      return toast.error("An image is required for new grains");
+
     setIsSaving(true);
 
     const data = new FormData();
@@ -116,17 +128,26 @@ export default function ProductsPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+  const openDeleteModal = (id) => {
+    setDeletingId(id);
+    setIsDeleteModalOpen(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
     try {
-      const product = products.find((p) => p._id === id);
+      const product = products.find((p) => p._id === deletingId);
       await api.delete(`/api/products/${product.slug}`);
-      toast.success("Product deleted");
+      toast.success("Product deleted successfully");
+      setIsDeleteModalOpen(false);
       fetchProducts();
     } catch (error) {
       console.error("Delete error:", error);
       toast.error("Failed to delete product");
+    } finally {
+      setIsDeleting(false);
+      setDeletingId(null);
     }
   };
 
@@ -162,7 +183,7 @@ export default function ProductsPage() {
               key={product._id}
               product={product}
               onEdit={() => handleEdit(product)}
-              onDelete={() => handleDelete(product._id)}
+              onDelete={() => openDeleteModal(product._id)}
             />
           ))}
           {products.length === 0 && (
@@ -209,7 +230,6 @@ export default function ProductsPage() {
                     </label>
                     <input
                       type="text"
-                      required
                       value={formData.name}
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
@@ -230,7 +250,6 @@ export default function ProductsPage() {
                         />
                         <input
                           type="number"
-                          required
                           value={formData.pricePerKg}
                           onChange={(e) =>
                             setFormData({
@@ -254,7 +273,6 @@ export default function ProductsPage() {
                         />
                         <input
                           type="number"
-                          required
                           value={formData.grindingTimePerKg}
                           onChange={(e) =>
                             setFormData({
@@ -337,6 +355,16 @@ export default function ProductsPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Grain Type?"
+        message={`Are you sure you want to delete "${products.find((p) => p._id === deletingId)?.name}"? This action will remove it from the catalog permanently.`}
+        isLoading={isDeleting}
+      />
     </main>
   );
 }
