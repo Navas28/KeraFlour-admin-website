@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   UtensilsCrossed,
   ShoppingBag,
+  Calendar,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -73,6 +74,13 @@ export default function Navbar() {
             >
               <ShoppingBag size={20} />
               <span>Orders</span>
+            </Link>
+            <Link
+              href="/schedule"
+              className="flex items-center space-x-2 px-5 py-3 text-lg font-semibold text-dark1 hover:text-green-700 transition"
+            >
+              <Calendar size={20} />
+              <span>Schedule</span>
             </Link>
           </nav>
 
@@ -166,6 +174,13 @@ export default function Navbar() {
                 className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
               >
                 Orders
+              </Link>
+              <Link
+                href="/schedule"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
+              >
+                Schedule
               </Link>
               <Link
                 href="/settings"

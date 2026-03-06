@@ -33,6 +33,7 @@ export default function ProductsPage() {
     name: "",
     pricePerKg: "",
     grindingTimePerKg: "",
+    machineType: "grain",
     image: null,
   });
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -58,6 +59,7 @@ export default function ProductsPage() {
       name: "",
       pricePerKg: "",
       grindingTimePerKg: "",
+      machineType: "grain",
       image: null,
     });
     setPreviewUrl(null);
@@ -88,6 +90,7 @@ export default function ProductsPage() {
     data.append("name", formData.name);
     data.append("pricePerKg", formData.pricePerKg);
     data.append("grindingTimePerKg", formData.grindingTimePerKg);
+    data.append("machineType", formData.machineType);
     if (formData.image) data.append("image", formData.image);
 
     try {
@@ -122,7 +125,8 @@ export default function ProductsPage() {
     setFormData({
       name: product.name,
       pricePerKg: product.pricePerKg,
-      grindingTimePerKg: product.grindingTimePerKg || 5,
+      grindingTimePerKg: product.grindingTimePerKg || 10,
+      machineType: product.machineType || "grain",
       image: null,
     });
     setPreviewUrl(product.image);
@@ -281,6 +285,24 @@ export default function ProductsPage() {
                         />
                       </div>
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
+                      Machine Category
+                    </label>
+                    <select
+                      value={formData.machineType}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          machineType: e.target.value,
+                        })
+                      }
+                      className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all font-medium text-gray-700"
+                    >
+                      <option value="grain">Grain Machine (Base)</option>
+                      <option value="spice">Spice Machine (Heavy Duty)</option>
+                    </select>
                   </div>
                 </div>
 
