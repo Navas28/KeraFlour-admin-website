@@ -20,11 +20,10 @@ export default function AuthProvider({ children }) {
         await logout();
         return;
       }
-
       setUser(data);
     } catch (error) {
       if (error.response?.status !== 401) {
-        console.warn("Session check skipped:", error.message);
+        console.warn("Unexpected error during auth check:", error.message);
       }
       setUser(null);
     } finally {
@@ -36,7 +35,6 @@ export default function AuthProvider({ children }) {
     fetchUser();
   }, []);
 
-  // Admin Route Protection
   useEffect(() => {
     if (!loading) {
       const isAuthPage = pathname === "/login" || pathname === "/signup";

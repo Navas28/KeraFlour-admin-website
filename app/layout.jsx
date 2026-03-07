@@ -1,19 +1,19 @@
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import AuthProvider from "@/context/AuthContext";
 import { Toaster } from "sonner";
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-inter",
 });
 
 export const metadata = {
-  title: "KeraFlour",
-  description: "Book slots easily with pickup & delivery options",
+  title: "KeraFlour Mill Admin",
+  description:
+    "Professional mill management — schedule, inventory and machine control",
 };
 
 export default function RootLayout({ children }) {
@@ -36,21 +36,20 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="KeraFlour" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={poppins.className}>
+      <body className={inter.className} style={{ backgroundColor: "#faf8f5" }}>
         <AuthProvider>
           <Navbar />
           {children}
-          <Footer />
         </AuthProvider>
-
         <Toaster
           position="bottom-right"
           richColors
           toastOptions={{
             style: {
-              borderRadius: "12px",
-              fontSize: "15px",
+              borderRadius: "14px",
+              fontSize: "14px",
               padding: "12px 16px",
+              fontWeight: "600",
             },
           }}
         />

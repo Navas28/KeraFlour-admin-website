@@ -7,15 +7,19 @@ import {
   X,
   LayoutDashboard,
   UtensilsCrossed,
-  ShoppingBag,
   Calendar,
+  LogOut,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ConfirmModal from "./UI/ConfirmModal";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -38,91 +42,91 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   };
 
+  const NavItem = ({ href, icon: Icon, label }) => {
+    const isActive = pathname === href;
+    return (
+      <Link
+        href={href}
+        className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+          isActive
+            ? "bg-amber-700 text-white shadow-sm"
+            : "text-amber-900/70 hover:text-amber-900 hover:bg-amber-50"
+        }`}
+      >
+        <Icon size={17} />
+        <span>{label}</span>
+      </Link>
+    );
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-100 p-6">
-        <div className="mx-auto max-w-screen-2xl flex items-center justify-between px-4 lg:px-6 h-16">
-          <Link href="/" className="flex items-center group">
-            <img
-              className="h-16 w-auto sm:h-25 transition-transform group-hover:scale-105"
-              src="/images/logo.png"
-              alt="Kera Flour Logo"
-            />
-            <span className="ml-3 font-bold text-xl text-dark1 tracking-tight hidden sm:block">
-              Admin Panel
-            </span>
+      <header className="sticky top-0 z-50 w-full bg-white border-b border-amber-100 shadow-sm">
+        <div className="mx-auto max-w-screen-2xl flex items-center justify-between px-6 h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3">
+            <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-amber-200 shadow-sm">
+              <Image
+                src="/images/logo.png"
+                alt="KeraFlour Logo"
+                fill
+                className="object-contain p-0.5"
+              />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="font-extrabold text-base text-amber-900 tracking-tight leading-none">
+                KeraFlour
+              </span>
+              <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest leading-none mt-0.5">
+                Mill Admin
+              </span>
+            </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center space-x-2">
-            <Link
-              href="/"
-              className="flex items-center space-x-2 px-5 py-3 text-lg font-semibold text-dark1 hover:text-green-700 transition"
-            >
-              <LayoutDashboard size={20} />
-              <span>Overview</span>
-            </Link>
-            <Link
-              href="/products"
-              className="flex items-center space-x-2 px-5 py-3 text-lg font-semibold text-dark1 hover:text-green-700 transition"
-            >
-              <UtensilsCrossed size={20} />
-              <span>Products</span>
-            </Link>
-            <Link
-              href="/orders"
-              className="flex items-center space-x-2 px-5 py-3 text-lg font-semibold text-dark1 hover:text-green-700 transition"
-            >
-              <ShoppingBag size={20} />
-              <span>Orders</span>
-            </Link>
-            <Link
-              href="/schedule"
-              className="flex items-center space-x-2 px-5 py-3 text-lg font-semibold text-dark1 hover:text-green-700 transition"
-            >
-              <Calendar size={20} />
-              <span>Schedule</span>
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-1">
+            <NavItem href="/" icon={LayoutDashboard} label="Dashboard Hub" />
           </nav>
 
+          {/* Right Side */}
           <div className="flex items-center space-x-3">
             {user ? (
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center space-x-2.5 pl-3 pr-1.5 py-1.5 bg-amber-50 rounded-2xl border border-amber-200 hover:bg-amber-100 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                  <span className="hidden sm:block text-amber-900 font-semibold text-sm">
+                    {user?.name || "Admin"}
+                  </span>
+                  <div className="w-8 h-8 bg-amber-700 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-sm">
                     {user?.name?.charAt(0).toUpperCase() || "A"}
                   </div>
-                  <span className="hidden sm:block text-gray-700 font-medium text-sm">
-                    Admin
-                  </span>
                 </button>
+
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
-                    <div className="px-4 py-2 border-b border-gray-50">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.name || "Admin"}
+                  <div className="absolute right-0 mt-2.5 w-60 bg-white rounded-2xl shadow-xl border border-amber-100 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <div className="px-5 py-3 border-b border-amber-50">
+                      <p className="text-sm font-bold text-amber-900">
+                        {user?.name}
                       </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
+                      <p className="text-[11px] text-amber-500 font-medium mt-0.5 truncate">
+                        {user?.email}
+                      </p>
                     </div>
-                    <div className="py-1">
+                    <div className="p-1.5">
                       <Link
                         href="/settings"
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="flex items-center px-4 py-2.5 text-sm text-amber-800 font-semibold hover:bg-amber-50 rounded-xl transition-colors gap-3"
                       >
-                        <ShieldUser size={16} className="mr-2 text-gray-400" />
+                        <Settings size={16} className="text-amber-500" />
                         Account Settings
                       </Link>
-                    </div>
-                    <div className="border-t border-gray-50 mt-1 pt-1">
                       <button
-                        onClick={() => {
-                          setShowLogoutModal(true);
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
+                        onClick={() => setShowLogoutModal(true)}
+                        className="w-full flex items-center px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors gap-3"
                       >
+                        <LogOut size={16} />
                         Sign Out
                       </button>
                     </div>
@@ -132,86 +136,73 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="bg-dark1 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+                className="bg-amber-700 text-white px-5 py-2 rounded-xl font-semibold text-sm hover:bg-amber-800 transition-all active:scale-95 shadow-sm"
               >
-                Admin Login
+                Login
               </Link>
             )}
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-gray-50 rounded-lg transition-colors"
+              className="lg:hidden p-2 text-amber-800 hover:bg-amber-50 rounded-xl transition-colors"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <Menu size={22} />
             </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-[100] bg-amber-950/40 backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <div className="absolute top-24 left-4 right-4 bg-white rounded-xl shadow-xl border border-gray-100 p-4">
-            <nav className="space-y-2">
-              <Link
-                href="/"
+          <div
+            className="absolute top-4 left-4 right-4 bg-white rounded-3xl shadow-2xl p-6 border border-amber-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-amber-200">
+                  <Image
+                    src="/images/logo.png"
+                    alt="KeraFlour Logo"
+                    fill
+                    className="object-contain p-0.5"
+                  />
+                </div>
+                <span className="font-bold text-amber-900 text-base">
+                  Mill Navigation
+                </span>
+              </div>
+              <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
+                className="p-2 bg-amber-50 rounded-full text-amber-700"
               >
-                Overview
-              </Link>
-              <Link
-                href="/products"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
-              >
-                Products
-              </Link>
-              <Link
-                href="/orders"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
-              >
-                Orders
-              </Link>
-              <Link
-                href="/schedule"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
-              >
-                Schedule
-              </Link>
-              <Link
-                href="/settings"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-700 hover:bg-green-100 rounded-lg font-medium"
-              >
-                Settings
-              </Link>
-
-              {!user && (
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 bg-dark1 text-white text-center rounded-lg font-medium"
-                >
-                  Admin Login
-                </Link>
-              )}
-
-              {user && (
-                <>
+                <X size={18} />
+              </button>
+            </div>
+            <nav className="space-y-1.5">
+              <NavItem href="/" icon={LayoutDashboard} label="Dashboard Hub" />
+              <div className="border-t border-amber-50 mt-4 pt-4">
+                {user ? (
                   <button
-                    onClick={() => {
-                      setShowLogoutModal(true);
-                    }}
-                    className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-100 rounded-lg"
+                    onClick={() => setShowLogoutModal(true)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 text-red-600 font-bold bg-red-50 rounded-2xl border border-red-100"
                   >
+                    <LogOut size={16} />
                     Sign Out
                   </button>
-                </>
-              )}
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block px-4 py-3.5 bg-amber-700 text-white text-center font-bold rounded-2xl shadow-md shadow-amber-200"
+                  >
+                    Admin Login
+                  </Link>
+                )}
+              </div>
             </nav>
           </div>
         </div>
@@ -219,9 +210,9 @@ export default function Navbar() {
 
       <ConfirmModal
         show={showLogoutModal}
-        title="Sign Out?"
-        message="Are you sure you want to log out of your admin account?"
-        confirmText="Sign Out"
+        title="Signing Out?"
+        message="Are you sure you want to end your administrative session?"
+        confirmText="Confirm Sign Out"
         type="logout"
         onConfirm={handleLogout}
         onCancel={() => setShowLogoutModal(false)}

@@ -27,7 +27,6 @@ export default function SignupPage() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
     if (!formData.name) return toast.error("Full Name is required");
     if (!formData.email) return toast.error("Email Address is required");
     if (!formData.password) return toast.error("Password is required");
@@ -35,7 +34,6 @@ export default function SignupPage() {
       return toast.error("Admin Master Key is required");
 
     setLoading(true);
-
     try {
       await api.post("/auth/signup", formData);
       toast.success("Admin account created successfully!");
@@ -50,111 +48,124 @@ export default function SignupPage() {
     }
   };
 
+  const InputField = ({
+    type = "text",
+    placeholder,
+    value,
+    onChange,
+    icon: Icon,
+  }) => (
+    <div className="relative group">
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-amber-400 group-focus-within:text-amber-600 transition-colors">
+        <Icon size={16} />
+      </div>
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full h-12 pl-11 pr-4 rounded-xl border border-amber-200 bg-amber-50/50 text-amber-900 placeholder-amber-300 focus:bg-white focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none transition-all font-medium text-sm"
+      />
+    </div>
+  );
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-6">
-      <div className="max-w-md w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 relative overflow-hidden">
-          {/* Decorative background element */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-60" />
+    <div className="min-h-screen flex items-center justify-center bg-amber-50/50 p-6">
+      <div className="max-w-md w-full">
+        <div className="bg-white p-8 rounded-2xl shadow-lg border border-amber-100">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-amber-700 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
+              <ShieldAlert className="text-white" size={30} />
+            </div>
+            <h1 className="text-2xl font-extrabold text-amber-900 mb-1.5">
+              Admin Registry
+            </h1>
+            <p className="text-amber-500 font-medium text-sm">
+              Create your secure administrator account
+            </p>
+          </div>
 
-          <div className="relative z-10">
-            <div className="text-center mb-10">
-              <div className="w-20 h-20 bg-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
-                <ShieldAlert className="text-white" size={36} />
-              </div>
-              <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-                Admin Registry
-              </h2>
-              <p className="text-gray-500 font-medium">
-                Create your secure administrator account
-              </p>
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1.5">
+                Full Name
+              </label>
+              <InputField
+                placeholder="Your full name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                icon={User}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1.5">
+                Email Address
+              </label>
+              <InputField
+                type="email"
+                placeholder="admin@keraflour.com"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                icon={Mail}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1.5">
+                Password
+              </label>
+              <PasswordInput
+                placeholder="Create a strong password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-amber-600 uppercase tracking-wider mb-1.5">
+                Admin Master Key
+              </label>
+              <PasswordInput
+                placeholder="Enter security secret"
+                value={formData.adminSecret}
+                onChange={(e) =>
+                  setFormData({ ...formData, adminSecret: e.target.value })
+                }
+                icon={Key}
+              />
             </div>
 
-            <form onSubmit={handleSignup} className="space-y-5">
-              <div className="space-y-4">
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                    <User size={18} />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="w-full h-14 pl-12 pr-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-medium"
-                  />
-                </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 bg-amber-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-amber-800 active:scale-[0.98] transition-all disabled:opacity-50 mt-2 shadow-sm text-sm"
+            >
+              {loading ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <ChevronRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
 
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                    <Mail size={18} />
-                  </div>
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="w-full h-14 pl-12 pr-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-medium"
-                  />
-                </div>
-
-                <PasswordInput
-                  placeholder="Create Password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-
-                <div className="pt-2">
-                  <div className="flex items-center gap-2 mb-2 ml-1">
-                    <Key size={14} className="text-emerald-600" />
-                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">
-                      Admin Master Key
-                    </span>
-                  </div>
-                  <PasswordInput
-                    placeholder="Enter security secret"
-                    value={formData.adminSecret}
-                    onChange={(e) =>
-                      setFormData({ ...formData, adminSecret: e.target.value })
-                    }
-                    icon={Key}
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-14 bg-dark1 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-800 hover:shadow-xl hover:shadow-emerald-900/10 active:scale-[0.98] transition-all disabled:opacity-50 mt-6"
+          <div className="mt-7 pt-6 border-t border-amber-50 text-center">
+            <p className="text-sm text-amber-400 font-medium">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-amber-700 font-bold hover:text-amber-800 transition-colors"
               >
-                {loading ? (
-                  <Loader2 className="animate-spin" size={20} />
-                ) : (
-                  <>
-                    <span>Initialize Admin Account</span>
-                    <ChevronRight size={18} />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="mt-10 pt-8 border-t border-gray-50 text-center">
-              <p className="text-sm text-gray-500 font-medium">
-                Authorized user?{" "}
-                <Link
-                  href="/login"
-                  className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors ml-1"
-                >
-                  Secure Login
-                </Link>
-              </p>
-            </div>
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </div>
