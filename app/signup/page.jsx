@@ -115,7 +115,7 @@ export default function SignupPage() {
             </div>
             <div>
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
-                Access Key
+                Password
               </label>
               <PasswordInput
                 placeholder="Create a strong key"
@@ -127,7 +127,7 @@ export default function SignupPage() {
             </div>
             <div>
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
-                Admin Master Secret
+                Admin Secret Key
               </label>
               <PasswordInput
                 placeholder="Enter security key"
